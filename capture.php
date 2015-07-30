@@ -1,8 +1,8 @@
-ï»¿<?php require_once("conn.php"); ?>
+<?php require_once("conn.php"); ?>
 <?php
 include 'funcoes.php';
 //include 'banco.php';
-// incluido teste
+
 $error = '';
 
 //echo "T=" . round(microtime(true) * 1000);
@@ -111,8 +111,7 @@ $COSINE = '00000000;00000000;00000000;00000000;00000000;00000000;00000000;000000
 //}
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-$EVT = $TYPE;	//obtï¿½m o valor de codEvento
-
+$EVT = $TYPE;	//obtêm o valor de codEvento
 
 
 // Pesquisa o tipo de evento na tabela tipos_eventos para o evento da mensagem
@@ -135,7 +134,7 @@ else
 	$error .= 'error: Tipo de evento nao localizado!<br>';
 
 
-/*
+
 // Pesquisa pelo RFID o ID do equipamento informado
 
 mysql_select_db($database_conn, $conn);
@@ -149,9 +148,10 @@ if($totalRows_rsEquipamento){
 }
 	else
 		$error .= 'error: RFID nao encontrado na tabela EQUIPAMENTO!<br>';
-*/
+
 //echo $IDEQ;
 
+/*
 // Pesquisa pela TOMADA, sem uso do RFID
 $IDEQ = $OUTLET;
 
@@ -167,7 +167,8 @@ else
 	$error .= 'error: tomada nao encontrada na tabela TOMADAS!<br>';
 
 //echo $IDTOMADA;
-
+*/
+echo $error;
 
 if($error == '') {
 
@@ -177,7 +178,7 @@ if($error == '') {
 	// Mexi aqui para incluir MV2, UNDER, OVER, DURATION
 	// 2 - inserir registro na tabela captura
 	$captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)",
-			GetSQLValueString($IDTOMADA,'int'),GetSQLValueString($TIPOEVT,'int'),GetSQLValueString($IDEQ,'int'),GetSQLValueString($IDEVT,'int'),GetSQLValueString(hex2float32($MEAN_VAL),'double'),GetSQLValueString(hex2float32($MEAN_VAL2),'double'),
+			GetSQLValueString($OUTLET,'int'),GetSQLValueString($TIPOEVT,'int'),GetSQLValueString($IDEQ,'int'),GetSQLValueString($IDEVT,'int'),GetSQLValueString(hex2float32($MEAN_VAL),'double'),GetSQLValueString(hex2float32($MEAN_VAL2),'double'),
 			GetSQLValueString($OFFSET,'int'),GetSQLValueString(hex2float32($GAIN),'double'),GetSQLValueString(hex2float32($RMS),'double'), GetSQLValueString($UNDER,'int'), GetSQLValueString($OVER,'int'),GetSQLValueString($DURATION,'int'));
 	//execute sql
 	mysql_select_db($database_conn,$conn) or die(mysql_error());
