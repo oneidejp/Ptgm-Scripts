@@ -18,12 +18,12 @@ if( (isset($_POST['TYPE'])) && ($_POST['TYPE']) )
 	$TYPE = $_POST['TYPE'];
 else
 	$error .= 'error: TYPE nao informado!<br>';
-	
+
 if( (isset($_POST['OUTLET'])) && ($_POST['OUTLET']) )
 	$OUTLET = $_POST['OUTLET'];
 else
 	$error .= 'error: OUTLET nao informado!<br>';
-	
+
 if( (isset($_POST['MV'])) && ($_POST['MV']) )
 	$MEAN_VAL = $_POST['MV'];
 else
@@ -70,18 +70,26 @@ if( (isset($_POST['SIN'])) && ($_POST['SIN']) )
 if( (isset($_POST['COS'])) && ($_POST['COS']) )
 	$COSINE = $_POST['COS'];
 
-// :::::::::::::::::::::::::::::::::::::::::::::::::::::::
-/*
-echo "RFID " . $RFID ;
-echo "Type " . $TYPE;
-echo "Outlet" . $OUTLET;
-echo "VMED " . $MEAN_VAL;
-echo "OFFSET " . $OFFSET;
-echo "GAIN " . $GAIN;
-echo "RMS " . $RMS;
-echo "SENO " . $SINE;
-echo "COSS " . $COSINE;
-*/
+	echo "RFID " . $RFID ;
+	echo "Type " . $TYPE;
+	echo "Outlet" . $OUTLET;
+	echo "VMED " . $MEAN_VAL;
+	echo "OFFSET " . $OFFSET;
+	echo "GAIN " . $GAIN;
+	echo "RMS " . $RMS;
+	echo "SENO " . $SINE;
+	echo "COSS " . $COSINE;
+
+	$f = fopen("file.txt", "w");
+	fwrite($f, print_r("RFID: " . $RFID, true));
+	fwrite($f, print_r("\nType: " . $TYPE, true));
+	fwrite($f, print_r("\nOutlet: " . $OUTLET, true));
+	fwrite($f, print_r("\nVMED: " . $MEAN_VAL, true));
+	fwrite($f, print_r("\nOFFSET: " . $OFFSET, true));
+	fwrite($f, print_r("\nGAIN: " . hex2float32($GAIN), true));
+	fwrite($f, print_r("\nRMS: " . hex2float32($RMS), true));
+	fwrite($f, print_r("\nSENO: " . $SINE, true));
+	fwrite($f, print_r("\nCOSS: " . $COSINE, true));
 
 //Debug
 /*
@@ -103,7 +111,7 @@ $COSINE = '00000000;00000000;00000000;00000000;00000000;00000000;00000000;000000
 	$SINE = explode(';', $SINE);
 	if(count($SINE) != 12)
 		$error .= 'error: SENO nao contem 12 valores!<br>';
-	
+
 	$COSINE = explode(';', $COSINE);
 	if(count($COSINE) != 12)
 		$error .= 'error: COSSENO nao contem 12 valores!<br>';
@@ -111,7 +119,7 @@ $COSINE = '00000000;00000000;00000000;00000000;00000000;00000000;00000000;000000
 //}
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-$EVT = $TYPE;	//obtêm o valor de codEvento
+$EVT = $TYPE;	//obtï¿½m o valor de codEvento
 
 
 // Pesquisa o tipo de evento na tabela tipos_eventos para o evento da mensagem
@@ -125,10 +133,10 @@ $totalRows_rsTipoEvento = mysql_num_rows($rsTipoEvento);
 if($totalRows_rsTipoEvento)
 {
 	$IDEVT = $row_rsTipoEvento['codEvento'];
-	if($IDEVT==1 || $IDEVT==3 || $IDEVT==6)
+	if($IDEVT==1 || $IDEVT==3 || $IDEVT==6 || $IDEVT==9)
 		$TIPOEVT = 2;
 	else
-		$TIPOEVT = 1;    
+		$TIPOEVT = 1;
 }
 else
 	$error .= 'error: Tipo de evento nao localizado!<br>';
@@ -144,7 +152,7 @@ $row_rsEquipamento = mysql_fetch_assoc($rsEquipamento);
 $totalRows_rsEquipamento = mysql_num_rows($rsEquipamento);
 
 if($totalRows_rsEquipamento){
-	$IDEQ = $row_rsEquipamento['codEquip'];    
+	$IDEQ = $row_rsEquipamento['codEquip'];
 }
 	else
 		$error .= 'error: RFID nao encontrado na tabela EQUIPAMENTO!<br>';
@@ -169,12 +177,13 @@ else
 //echo $IDTOMADA;
 */
 echo $error;
-
+fwrite($f, print_r("\Erro: " . $error, true));
+fclose($f);
 if($error == '') {
 
 	//CADASTRA ONDA ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	
-	
+
+
 	// Mexi aqui para incluir MV2, UNDER, OVER, DURATION
 	// 2 - inserir registro na tabela captura
 	$captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)",
@@ -184,7 +193,7 @@ if($error == '') {
 	mysql_select_db($database_conn,$conn) or die(mysql_error());
 	$result1 = mysql_query($captureSQL,$conn) or die(mysql_error());
 	$lastid = mysql_insert_id();
-		
+
     //if((intval($TYPE) <= 3) && (intval($TYPE) > 0))
 	{
 		// 3 - inserir dados na tabela onda
@@ -196,14 +205,15 @@ if($error == '') {
 			//Execute SQL
 			mysql_select_db($database_conn,$conn) or die(mysql_error());
 			$result1 = mysql_query($ondaSQL,$conn) or die(mysql_error());
-		}	
+		}
 	}
 
 	//echo "T=" .round(microtime(true) * 1000);
 	echo "Success!!";
-		
+
+
 }
-else 
+else
     echo "Bosta " . $error;
 
 mysql_free_result($rsEquipamento);
