@@ -1,82 +1,21 @@
 <?php
 
-$okSQL = true;
+//carrega funcoes
+require_once("funcoes.php");
 
-// Fun��o para inser��o dos valores no banco de dados
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") {
-    if (PHP_VERSION < 6) {
-        $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-    }
-    $conn = mysqli_connect("localhost", "root", "senha.123", "protegemed");
-    $value = mysqli_real_escape_string($conn, $theValue);
+//define variaveis de teste
+$error_test = true;
+$error = "";
 
-    switch ($theType) {
-        case "text":
-            $value = ($value != "") ? "'" . $value . "'" : "NULL";
-            break;
-        case "long":
-        case "int":
-            $value = ($value != "") ? intval($value) : "NULL";
-            break;
-        case "double":
-            $value = ($value != "") ? doubleval($value) : "NULL";
-            break;
-        case "date":
-            $value = ($value != "") ? "'" . $value . "'" : "NULL";
-            break;
-        case "defined":
-            $value = ($value != "") ? $theDefinedValue : $theNotDefinedValue;
-            break;
-    }
-    mysqli_close($conn);
-    return $value;
-}
-
-// Fun��o que transforma os valores float 32 para valores hexadecimais (IEEE-754)
-function ieee_float($f) {
-    $value = (float) $f;
-    $b = pack("f", $value);
-    //$hexa = array();
-    for ($i = 0; $i < strlen($b); $i++) {
-        $c = ord($b{$i});
-        $hexa[] = sprintf("%02X", $c);
-    }
-    $hex = '';
-    for ($i = strlen($hexa); $i >= 0; $i--) {
-        $hex.=$hexa[$i];
-    }
-
-    return $hex;
-}
-
-// Fun��o que transforma os valores hexadecimais para valores float 32 (IEEE-754)
-function hex2float32($hex) {
-    // Gera sequencia bin�ria. OBS: concatena '1' no in�cio para n�o perder ZEROS, mas logo ap�s retira-o com SUBSTR
-    $binario = substr(base_convert('1' . $hex, 16, 2), 1);
-
-    $sinal = substr($binario, 0, 1); // 1 bit 0 ou 1
-    $exp = substr($binario, 1, 8); // 8 bits para o expoente
-    $valor = substr($binario, 9); // Inicia do bit 9 para a mantissa
-
-    $fracional = 0;
-    for ($i = 0; $i < strlen($valor); $i++) {
-        // Aplica a formula:  2**-1  +  2**-2  +  2**-3  +  ...  +  2**-n  ::  IEEE-754
-        $fracional += pow(2, ($i + 1) * -1) * substr($valor, $i, 1);
-    }
-    $mant = 1;
-    if (bindec($exp) == 0) {
-        $mant = 0;
-    }
-    // Aplica a formula:  -1**sign  *  1 + fractional  *  2**exp-127  ::  IEEE-754
-    //FIXME: Eliminar 1 + do $fracional quando o expoente for -127
-    return pow(-1, $sinal) * ( $mant + $fracional ) * pow(2, bindec($exp) - 127);
-}
-
+//conecta no banco
 $conn = mysqli_connect("localhost", "root", "senha.123", "protegemed");
-$error = '';
+if(!$conn){
+    logTXT("Error: Unable to connect to MySQL." . PHP_EOL);
+    logTXT("Debugging errno: " . mysqli_connect_errno() . PHP_EOL);
+    logTXT("Debugging error: " . mysqli_connect_error() . PHP_EOL);
+}
 
-//echo "T=" . round(microtime(true) * 1000);
-// RECEBE DADOS :::::::::::::::::::::::::::::::::::::::::
+//recebe dados do POST
 $RFID = -1;
 if ((isset($_POST['RFID'])) && ($_POST['RFID'])) {
     $RFID = $_POST['RFID'];
@@ -139,43 +78,6 @@ if ((isset($_POST['SIN'])) && ($_POST['SIN']))
 if ((isset($_POST['COS'])) && ($_POST['COS']))
     $COSINE = $_POST['COS'];
 
-echo "RFID " . $RFID;
-echo "Type " . $TYPE;
-echo "Outlet" . $OUTLET;
-echo "VMED " . $MEAN_VAL;
-echo "OFFSET " . $OFFSET;
-echo "GAIN " . $GAIN;
-echo "RMS " . $RMS;
-echo "SENO " . $SINE;
-echo "COSS " . $COSINE;
-
-$f = fopen("file.txt", "w");
-fwrite($f, print_r("RFID: " . $RFID, true));
-fwrite($f, print_r("\nType: " . $TYPE, true));
-fwrite($f, print_r("\nOutlet: " . $OUTLET, true));
-fwrite($f, print_r("\nVMED: " . $MEAN_VAL, true));
-fwrite($f, print_r("\nOFFSET: " . $OFFSET, true));
-fwrite($f, print_r("\nGAIN: " . hex2float32($GAIN), true));
-fwrite($f, print_r("\nRMS: " . hex2float32($RMS), true));
-fwrite($f, print_r("\nSENO: " . $SINE, true));
-fwrite($f, print_r("\nCOSS: " . $COSINE, true));
-
-//Debug
-/*
-  $RFID = '12345678';
-  $TYPE = '02';
-  $OUTLET = '1';
-  $MEAN_VAL = '00000000';
-  $OFFSET = '00000000';
-  $GAIN = '00000000';
-  $RMS = '00000000';
-
-  $SINE = '00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000';
-  $COSINE = '00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000;00000000';
- */
-
-//if((intval($TYPE) <= 3) && (intval($TYPE) > 0))
-//{
 // QUEBRA OS VALORES SEPARADOS POR ';' :::::::::::::::::::
 $SINE = explode(';', $SINE);
 if (count($SINE) != 12) {
@@ -185,18 +87,19 @@ $COSINE = explode(';', $COSINE);
 if (count($COSINE) != 12) {
     $error .= 'error: COSSENO nao contem 12 valores!<br>';
 }
-//echo "Sen e Cos Quebrados <br>";
-//}
-// :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-$EVT = $TYPE; //obt�m o valor de codEvento
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::
+if($error != ''){
+  logTXT("Erro em obter dados do POST.\n" . $error);
+  $error_test = false;
+}
+
 // Pesquisa o tipo de evento na tabela tipos_eventos para o evento da mensagem
-$query_rsTipoEvento = "SELECT * FROM eventos WHERE codEvento = '$EVT'";
+$query_rsTipoEvento = "SELECT * FROM eventos WHERE codEvento = '$TYPE'";
 $result = mysqli_query($conn, $query_rsTipoEvento);
 if (!$result) {
-    printf("Error: %s\n", $conn->error);
-    fwrite($f, print_r("\nErro selecionando eventos: %s\n" . $conn->error, true));
-    $okSQL = false;
+    logTXT("Erro selecionando eventos.\n" . $conn->error);
+    $error_test = false;
 } else {
     $row_rsTipoEvento = mysqli_fetch_assoc($result);
     $totalRows_rsTipoEvento = mysqli_num_rows($result);
@@ -205,24 +108,23 @@ if (!$result) {
 //echo "Acessou MYSQL <br>";
 if ($totalRows_rsTipoEvento) {
     $IDEVT = $row_rsTipoEvento['codEvento'];
-    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9)
+    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9 || $IDEVT == 10)
         $TIPOEVT = 2;
     else
         $TIPOEVT = 1;
 }
 else {
-    $error .= 'error: Tipo de evento nao localizado!<br>';
+    logTXT("Tipo de evento nao localizado.");
+    $error_test = false;
 }
 
 
 // Pesquisa pelo RFID o ID do equipamento informado
-
 $rsEquipamento = "SELECT * FROM equipamento WHERE rfid= '$RFID'";
 $result = mysqli_query($conn, $rsEquipamento);
 if (!$result) {
-    printf("Error: %s\n", $conn->error);
-    fwrite($f, print_r("\nErro selecionando equipamento: %s\n" . $conn->error, true));
-    $okSQL = false;
+    logTXT("Erro selecionando equipamento.\n" . $conn->error);
+    $error_test = false;
 } else {
     $row_rsEquipamento = mysqli_fetch_assoc($result);
     $totalRows_rsEquipamento = mysqli_num_rows($result);
@@ -231,69 +133,39 @@ if (!$result) {
 if ($totalRows_rsEquipamento) {
     $IDEQ = $row_rsEquipamento['codEquip'];
 } else {
-    $error .= 'error: RFID nao encontrado na tabela EQUIPAMENTO!<br>';
+  logTXT("RFID nao encontrado na tabela EQUIPAMENTO.");
+  $error_test = false;
 }
 
-//echo $IDEQ;
-
-/*
-  // Pesquisa pela TOMADA, sem uso do RFID
-  $IDEQ = $OUTLET;
-
-  mysql_select_db($database_conn, $conn);
-  $query_rsTomada = "SELECT * FROM tomada WHERE codTomada = $OUTLET";
-  $rsTomada = mysql_query($query_rsTomada, $conn) or die(mysql_error());
-  $row_rsTomada = mysql_fetch_assoc($rsTomada);
-  $totalRows_rsTomada = mysql_num_rows($rsTomada);
-
-  if($totalRows_rsTomada)
-  $IDTOMADA = $row_rsTomada['codTomada'];
-  else
-  $error .= 'error: tomada nao encontrada na tabela TOMADAS!<br>';
-
-  //echo $IDTOMADA;
- */
-
 if ($error == '') {
-
-    //CADASTRA ONDA ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // Mexi aqui para incluir MV2, UNDER, OVER, DURATION
-    // 2 - inserir registro na tabela captura
+    //inserir no capturaatual
     $captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)", GetSQLValueString($OUTLET, 'int'), GetSQLValueString($TIPOEVT, 'int'), GetSQLValueString($IDEQ, 'int'), GetSQLValueString($IDEVT, 'int'), GetSQLValueString(hex2float32($MEAN_VAL), 'double'), GetSQLValueString(hex2float32($MEAN_VAL2), 'double'), GetSQLValueString($OFFSET, 'int'), GetSQLValueString(hex2float32($GAIN), 'double'), GetSQLValueString(hex2float32($RMS), 'double'), GetSQLValueString($UNDER, 'int'), GetSQLValueString($OVER, 'int'), GetSQLValueString($DURATION, 'int'));
     //execute sql
+    //logTXT("Capture SQL: .\n" . $captureSQL);
     $result = mysqli_query($conn, $captureSQL);
-    fwrite($f, print_r("\nCaptura Atual SQL: " . $captureSQL, true));
-    fwrite($f, print_r("\nResult: " . $result, true));
     if (!$result) {
-        printf("Error: %s\n", $conn->error);
-        fwrite($f, print_r("\nErro inserindo capturaatual: %s\n" . $conn->error, true));
-        $okSQL = false;
+      logTXT("Erro inserindo capturaatual.\n" . $conn->error);
+      $error_test = false;
     } else {
         $lastid = mysqli_insert_id($conn);
-        fwrite($f, print_r("\nLast ID: " . $lastid, true));
     }
 
     for ($i = 0; $i < 12; $i++) {
         $ondaSQL = sprintf("INSERT INTO harmatual (codCaptura,codHarmonica,sen,cos) VALUES (%s,%s,%s,%s)", GetSQLValueString($lastid, 'int'), GetSQLValueString($i + 1, 'int'), GetSQLValueString(hex2float32($SINE[$i]), 'double'), GetSQLValueString(hex2float32($COSINE[$i]), 'double'));
         //Execute SQL
-        fwrite($f, print_r("\nHarm Atual SQL[{$i}]: " . $ondaSQL, true));
         $result = mysqli_query($conn, $ondaSQL);
 
         if (!$result) {
-            printf("Error: %s\n", $conn->error);
-            fwrite($f, print_r("\nErro inserindo harmatual[{$i}]: %s\n" . $conn->error, true));
-            $okSQL = false;
+          logTXT("Erro inserindo harmatual[{$i}].\n" . $conn->error);
+          logTXT("CodCaptura: {$lastid}].");
+          $error_test = false;
         }
     }
-
-    //echo "T=" .round(microtime(true) * 1000);
-    if($okSQL){
-        fwrite($f, print_r("\n\nSQL nao retornaram erros!!! ", true));
-    }
-} else {
-    echo "Error:  " . $error;
-    fwrite($f, print_r("\n\n\nErro: " . $error, true));
 }
 
 mysqli_close($conn);
-fclose($f);
+if($error_test){
+    $log = "CodCaptura {$lastid} inserido corretamente no banco as ";
+    $log .= date("H:i:s") . " do dia " . date("d-m-Y");
+    logTXT($log, "LogOK.txt");
+}
