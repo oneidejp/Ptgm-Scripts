@@ -1,6 +1,7 @@
 <?php
 
 if (!function_exists('logTXT')) {
+
     function logTXT($data, $filename = "log.txt") {
         $f = @fopen($filename, 'a+');
         $fcontents = fread($f, filesize($filename));
@@ -13,6 +14,7 @@ if (!function_exists('logTXT')) {
             return $bytes;
         }
     }
+
 }
 
 // Fun��o para inser��o dos valores no banco de dados
@@ -84,5 +86,3 @@ function hex2float32($hex) {
     //FIXME: Eliminar 1 + do $fracional quando o expoente for -127
     return pow(-1, $sinal) * ( $mant + $fracional ) * pow(2, bindec($exp) - 127);
 }
-
-?>
