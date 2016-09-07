@@ -9,7 +9,7 @@ $error = "";
 
 //conecta no banco
 $conn = mysqli_connect("localhost", "root", "senha.123", "protegemed");
-if(!$conn){
+if (!$conn) {
     logTXT("Error: Unable to connect to MySQL." . PHP_EOL);
     logTXT("Debugging errno: " . mysqli_connect_errno() . PHP_EOL);
     logTXT("Debugging error: " . mysqli_connect_error() . PHP_EOL);
@@ -89,9 +89,9 @@ if (count($COSINE) != 12) {
 }
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::
-if($error != ''){
-  logTXT("Erro em obter dados do POST.\n" . $error);
-  $error_test = false;
+if ($error != '') {
+    logTXT("Erro em obter dados do POST.\n" . $error);
+    $error_test = false;
 }
 
 // Pesquisa o tipo de evento na tabela tipos_eventos para o evento da mensagem
@@ -133,8 +133,8 @@ if (!$result) {
 if ($totalRows_rsEquipamento) {
     $IDEQ = $row_rsEquipamento['codEquip'];
 } else {
-  logTXT("RFID nao encontrado na tabela EQUIPAMENTO.");
-  $error_test = false;
+    logTXT("RFID nao encontrado na tabela EQUIPAMENTO.");
+    $error_test = false;
 }
 
 if ($error == '') {
@@ -144,8 +144,8 @@ if ($error == '') {
     //logTXT("Capture SQL: .\n" . $captureSQL);
     $result = mysqli_query($conn, $captureSQL);
     if (!$result) {
-      logTXT("Erro inserindo capturaatual.\n" . $conn->error);
-      $error_test = false;
+        logTXT("Erro inserindo capturaatual.\n" . $conn->error);
+        $error_test = false;
     } else {
         $lastid = mysqli_insert_id($conn);
     }
@@ -156,15 +156,15 @@ if ($error == '') {
         $result = mysqli_query($conn, $ondaSQL);
 
         if (!$result) {
-          logTXT("Erro inserindo harmatual[{$i}].\n" . $conn->error);
-          logTXT("CodCaptura: {$lastid}].");
-          $error_test = false;
+            logTXT("Erro inserindo harmatual[{$i}].\n" . $conn->error);
+            logTXT("CodCaptura: {$lastid}].");
+            $error_test = false;
         }
     }
 }
 
 mysqli_close($conn);
-if($error_test){
+if ($error_test) {
     $log = "CodCaptura {$lastid} inserido corretamente no banco as ";
     $log .= date("H:i:s") . " do dia " . date("d-m-Y");
     logTXT($log, "LogOK.txt");
