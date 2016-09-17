@@ -15,22 +15,22 @@ if (!$conn) {
     logTXT("Debugging error: " . mysqli_connect_error() . PHP_EOL);
 }
 
-//recebe dados do POST
+//recebe e trata os dados do POST
 $RFID = -1;
 if ((isset($_POST['RFID'])) && ($_POST['RFID'])) {
     $RFID = $_POST['RFID'];
 } else {
-    $error .= 'error: RFID nao infomado!<br>';
+    $error .= 'RFID nao informado.';
 }
 if ((isset($_POST['TYPE'])) && ($_POST['TYPE']))
     $TYPE = $_POST['TYPE'];
 else
-    $error .= 'error: TYPE nao informado!<br>';
+    $error .= 'TYPE nao informado.';
 
 if ((isset($_POST['OUTLET'])) && ($_POST['OUTLET']))
     $OUTLET = $_POST['OUTLET'];
 else
-    $error .= 'error: OUTLET nao informado!<br>';
+    $error .= 'OUTLET nao informado.';
 
 if ((isset($_POST['MV'])) && ($_POST['MV']))
     $MEAN_VAL = $_POST['MV'];
@@ -50,27 +50,27 @@ else
 if ((isset($_POST['GAIN'])) && ($_POST['GAIN']))
     $GAIN = $_POST['GAIN'];
 else
-    $error .= 'error: GAIN nao informado!<br>';
+    $error .= 'GAIN nao informado.';
 
 if ((isset($_POST['RMS'])) && ($_POST['RMS']))
     $RMS = $_POST['RMS'];
 else
-    $error .= 'error: RMS nao informado!<br>';
+    $error .= 'RMS nao informado.';
 
 if ((isset($_POST['UNDER'])) && ($_POST['UNDER']))
     $UNDER = $_POST['UNDER'];
 else
-    $error .= 'error: Numero de Underflow (UNDER) nao informado!<br>';
+    $error .= 'Numero de Underflow (UNDER) nao informado.';
 
 if ((isset($_POST['OVER'])) && ($_POST['OVER']))
     $OVER = $_POST['OVER'];
 else
-    $error .= 'error: Numero de Overflow (OVER) nao informado!<br>';
+    $error .= 'Numero de Overflow (OVER) nao informado.';
 
 if ((isset($_POST['DURATION'])) && ($_POST['DURATION']))
     $DURATION = $_POST['DURATION'];
 else
-    $error .= 'error: Duracao da Fuga informada!<br>';
+    $error .= 'Duracao da Fuga informada.';
 
 if ((isset($_POST['SIN'])) && ($_POST['SIN']))
     $SINE = $_POST['SIN'];
@@ -81,16 +81,16 @@ if ((isset($_POST['COS'])) && ($_POST['COS']))
 // QUEBRA OS VALORES SEPARADOS POR ';' :::::::::::::::::::
 $SINE = explode(';', $SINE);
 if (count($SINE) != 12) {
-    $error .= 'error: SENO nao contem 12 valores!<br>';
+    $error .= 'SENO nao contem 12 valores.';
 }
 $COSINE = explode(';', $COSINE);
 if (count($COSINE) != 12) {
-    $error .= 'error: COSSENO nao contem 12 valores!<br>';
+    $error .= 'COSSENO nao contem 12 valores.';
 }
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if ($error != '') {
-    logTXT("Erro em obter dados do POST.\n" . $error);
+    logTXT("Erro em obter dados do POST. Problema detectado:\n" . $error);
     $error_test = false;
 }
 
@@ -108,7 +108,7 @@ if (!$result) {
 //echo "Acessou MYSQL <br>";
 if ($totalRows_rsTipoEvento) {
     $IDEVT = $row_rsTipoEvento['codEvento'];
-    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9 || $IDEVT == 10)
+    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9 || $IDEVT == 10 || $IDEVT == 11)
         $TIPOEVT = 2;
     else
         $TIPOEVT = 1;
