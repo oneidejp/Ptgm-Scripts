@@ -108,7 +108,7 @@ if (!$result) {
 //echo "Acessou MYSQL <br>";
 if ($totalRows_rsTipoEvento) {
     $IDEVT = $row_rsTipoEvento['codEvento'];
-    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9 || $IDEVT == 10 || $IDEVT == 11)
+    if ($IDEVT == 1 || $IDEVT == 3 || $IDEVT == 6 || $IDEVT == 9 || $IDEVT == 10 || $IDEVT == 11 || $IDEVT == 12)
         $TIPOEVT = 2;
     else
         $TIPOEVT = 1;
@@ -165,7 +165,8 @@ if ($error == '') {
 
 mysqli_close($conn);
 if ($error_test) {
-    $log = "CodCaptura {$lastid} inserido corretamente no banco as ";
-    $log .= date("H:i:s") . " do dia " . date("d-m-Y");
+    $log = "CodCaptura {$lastid} inserido corretamente no banco dia ";
+    $log .= date("d-m-Y") . " as ";
+    $log .= date("H:i:s");
     logTXT($log, "LogOK.txt");
 }
