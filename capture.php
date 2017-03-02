@@ -133,15 +133,15 @@ if (!$result) {
 if ($totalRows_rsEquipamento) {
     $IDEQ = $row_rsEquipamento['codEquip'];
 } else {
-    logTXT("RFID nao encontrado na tabela EQUIPAMENTO.");
+    logTXT("RFID {$RFID} nao encontrado na tabela EQUIPAMENTO.");
     $error_test = false;
 }
 
 if ($error == '') {
     //inserir no capturaatual
-    $captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW(),%s,%s,%s)", GetSQLValueString($OUTLET, 'int'), GetSQLValueString($TIPOEVT, 'int'), GetSQLValueString($IDEQ, 'int'), GetSQLValueString($IDEVT, 'int'), GetSQLValueString(hex2float32($MEAN_VAL), 'double'), GetSQLValueString(hex2float32($MEAN_VAL2), 'double'), GetSQLValueString($OFFSET, 'int'), GetSQLValueString(hex2float32($GAIN), 'double'), GetSQLValueString(hex2float32($RMS), 'double'), GetSQLValueString($UNDER, 'int'), GetSQLValueString($OVER, 'int'), GetSQLValueString($DURATION, 'int'));
+    $captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','NOW()','%s','%s','%s');", GetSQLValueString($OUTLET, 'int'), GetSQLValueString($TIPOEVT, 'int'), GetSQLValueString($IDEQ, 'int'), GetSQLValueString($IDEVT, 'int'), GetSQLValueString(hex2float32($MEAN_VAL), 'double'), GetSQLValueString(hex2float32($MEAN_VAL2), 'double'), GetSQLValueString($OFFSET, 'int'), GetSQLValueString(hex2float32($GAIN), 'double'), GetSQLValueString(hex2float32($RMS), 'double'), GetSQLValueString($UNDER, 'int'), GetSQLValueString($OVER, 'int'), GetSQLValueString($DURATION, 'int'));
     //execute sql
-    //logTXT("Capture SQL: .\n" . $captureSQL);
+    //logTXT("Capture SQL: \n" . $captureSQL);
     $result = mysqli_query($conn, $captureSQL);
     if (!$result) {
         logTXT("Erro inserindo capturaatual.\n" . $conn->error);
