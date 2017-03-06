@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Ptgm-Banco/.idea/Ptgm-Banco.iml" filepath="$PROJECT_DIR$/../Ptgm-Banco/.idea/Ptgm-Banco.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Ptgm-InterfaceWeb/.idea/Ptgm-InterfaceWeb.iml" filepath="$PROJECT_DIR$/../Ptgm-InterfaceWeb/.idea/Ptgm-InterfaceWeb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ptgm-Scripts.iml" filepath="$PROJECT_DIR$/.idea/Ptgm-Scripts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Ptgm-ServerWebSocket/.idea/Ptgm-ServerWebSocket.iml" filepath="$PROJECT_DIR$/../Ptgm-ServerWebSocket/.idea/Ptgm-ServerWebSocket.iml" />
+    </modules>
+  </component>
+</project>
