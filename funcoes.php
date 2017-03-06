@@ -17,7 +17,7 @@ if (!function_exists('logTXT')) {
 
 }
 
-// Fun��o para inser��o dos valores no banco de dados
+// Função para inserção dos valores no banco de dados
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") {
     if (PHP_VERSION < 6) {
         $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
