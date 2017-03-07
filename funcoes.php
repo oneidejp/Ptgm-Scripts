@@ -47,7 +47,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     return $value;
 }
 
-// Fun��o que transforma os valores float 32 para valores hexadecimais (IEEE-754)
+// Funçãoo que transforma os valores float 32 para valores hexadecimais (IEEE-754)
 function ieee_float($f) {
     $value = (float) $f;
     $b = pack("f", $value);
@@ -64,9 +64,9 @@ function ieee_float($f) {
     return $hex;
 }
 
-// Fun��o que transforma os valores hexadecimais para valores float 32 (IEEE-754)
+// Função que transforma os valores hexadecimais para valores float 32 (IEEE-754)
 function hex2float32($hex) {
-    // Gera sequencia bin�ria. OBS: concatena '1' no in�cio para n�o perder ZEROS, mas logo ap�s retira-o com SUBSTR
+    // Gera sequencia binária. OBS: concatena '1' no início para não perder ZEROS, mas logo após retira-o com SUBSTR
     $binario = substr(base_convert('1' . $hex, 16, 2), 1);
 
     $sinal = substr($binario, 0, 1); // 1 bit 0 ou 1
