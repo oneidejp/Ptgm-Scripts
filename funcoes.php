@@ -22,7 +22,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     if (PHP_VERSION < 6) {
         $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
     }
-    $conn = mysqli_connect("localhost", "root", "senha.123", "protegemed");
+    $conn = mysqli_connect("localhost", "root", "123", "protegemed");
     $value = mysqli_real_escape_string($conn, $theValue);
 
     switch ($theType) {

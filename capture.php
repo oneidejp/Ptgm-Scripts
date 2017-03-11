@@ -3,12 +3,13 @@
 //carrega funcoes
 require_once("funcoes.php");
 
+
 //define variaveis de teste
 $error_test = true;
 $error = "";
 
 //conecta no banco
-$conn = mysqli_connect("localhost", "root", "senha.123", "protegemed");
+$conn = mysqli_connect("localhost", "root", "123", "protegemed");
 if (!$conn) {
     logTXT("Error: Unable to connect to MySQL." . PHP_EOL);
     logTXT("Debugging errno: " . mysqli_connect_errno() . PHP_EOL);
@@ -139,7 +140,7 @@ if ($totalRows_rsEquipamento) {
 
 if ($error == '') {
     //inserir no capturaatual
-    $captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','NOW()','%s','%s','%s');", GetSQLValueString($OUTLET, 'int'), GetSQLValueString($TIPOEVT, 'int'), GetSQLValueString($IDEQ, 'int'), GetSQLValueString($IDEVT, 'int'), GetSQLValueString(hex2float32($MEAN_VAL), 'double'), GetSQLValueString(hex2float32($MEAN_VAL2), 'double'), GetSQLValueString($OFFSET, 'int'), GetSQLValueString(hex2float32($GAIN), 'double'), GetSQLValueString(hex2float32($RMS), 'double'), GetSQLValueString($UNDER, 'int'), GetSQLValueString($OVER, 'int'), GetSQLValueString($DURATION, 'int'));
+    $captureSQL = sprintf("INSERT INTO capturaatual (codTomada,codTipoOnda,codEquip,codEvento,valorMedio,VM2,offset,gain,eficaz,dataAtual, under,over,duration) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s',CURRENT_DATE,'%s','%s','%s');", GetSQLValueString($OUTLET, 'int'), GetSQLValueString($TIPOEVT, 'int'), GetSQLValueString($IDEQ, 'int'), GetSQLValueString($IDEVT, 'int'), GetSQLValueString(hex2float32($MEAN_VAL), 'double'), GetSQLValueString(hex2float32($MEAN_VAL2), 'double'), GetSQLValueString($OFFSET, 'int'), GetSQLValueString(hex2float32($GAIN), 'double'), GetSQLValueString(hex2float32($RMS), 'double'), GetSQLValueString($UNDER, 'int'), GetSQLValueString($OVER, 'int'), GetSQLValueString($DURATION, 'int'));
     //execute sql
     //logTXT("Capture SQL: \n" . $captureSQL);
     $result = mysqli_query($conn, $captureSQL);
