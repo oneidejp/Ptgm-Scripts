@@ -17,7 +17,10 @@ if (!function_exists('logTXT')) {
 
 }
 
-// Fun��o para inser��o dos valores no banco de dados
+/**
+ * Função para inserção dos valores no banco de dados
+ * @deprecated Verificar necessidade da função e a possibilidade de eliminação
+ */
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") {
     if (PHP_VERSION < 6) {
         $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
@@ -47,7 +50,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     return $value;
 }
 
-// Fun��o que transforma os valores float 32 para valores hexadecimais (IEEE-754)
+// Função que transforma os valores float 32 para valores hexadecimais (IEEE-754)
 function ieee_float($f) {
     $value = (float) $f;
     $b = pack("f", $value);
@@ -64,7 +67,7 @@ function ieee_float($f) {
     return $hex;
 }
 
-// Fun��o que transforma os valores hexadecimais para valores float 32 (IEEE-754)
+// Função que transforma os valores hexadecimais para valores float 32 (IEEE-754)
 function hex2float32($hex) {
     // Gera sequencia bin�ria. OBS: concatena '1' no in�cio para n�o perder ZEROS, mas logo ap�s retira-o com SUBSTR
     $binario = substr(base_convert('1' . $hex, 16, 2), 1);
